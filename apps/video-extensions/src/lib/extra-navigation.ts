@@ -2,6 +2,10 @@ import { updateVideos } from "./update-videos";
 
 const shortsKeywords = ['short'];
 
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function isInShortsMode() {
     return shortsKeywords.some(s => {
         return window.location.href.includes(s);
@@ -13,7 +17,13 @@ function stop(e: KeyboardEvent) {
     e.stopImmediatePropagation();
 }
 
-export function extraNavigation(e: KeyboardEvent) {
+const keys = {
+    videoWrapper: '.ytLockupViewModelWrapper',
+    moreButtonInsideWrapper: 'button',
+    moreMenu: '.ytListViewModelHost',
+    addToQueueButtonInsideMoreMenu: '.ytListItemViewModelHost'
+}
+export async function extraNavigation(e: KeyboardEvent) {
     // shorts controls
     if (isInShortsMode()) {
         if (e.key == 'ArrowLeft') {
@@ -36,6 +46,21 @@ export function extraNavigation(e: KeyboardEvent) {
         }
         if (e.key == '0') {
             updateVideos(v => v.currentTime = 0);
+        }
+    }
+
+    // add to queue controls
+    if (e.key == 'a') {
+        const videoWrapper = document.querySelector(keys.videoWrapper + ':hover');
+        const moreButton = videoWrapper?.querySelector(keys.moreButtonInsideWrapper) as HTMLElement;
+        moreButton?.click();
+        await delay(100);
+        const moreMenu = document.querySelector(keys.moreMenu);
+        const addToQueueButton = moreMenu?.querySelector(keys.addToQueueButtonInsideMoreMenu) as HTMLElement;
+        addToQueueButton?.click();
+
+        if (!videoWrapper || !moreButton || !moreMenu || !addToQueueButton) {
+            console.warn('Could not find all elements for add to queue shortcut');
         }
     }
 }

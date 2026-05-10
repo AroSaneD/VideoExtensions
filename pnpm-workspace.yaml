@@ -6,3 +6,8 @@ packages:
   #- 'components/**'
   # exclude packages that are inside test directories
   #- '!**/test/**'
+allowBuilds:
+  '@sveltejs/kit': true
+  esbuild: true
+  svelte-preprocess: true
+  turbo: true
